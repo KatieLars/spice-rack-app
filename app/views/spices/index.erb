@@ -1,0 +1,5 @@
+<h1>Your Spices</h1>
+
+<%@spices.each.with_index(1) do |spice| %>
+  <%=index%>. <a href="/spices/<%=spice.name.slug%>"><%=spice.name%></a>
+<%end%>
