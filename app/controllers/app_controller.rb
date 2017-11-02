@@ -43,7 +43,7 @@ class AppController < Sinatra::Base
   post '/signup' do
     user = User.new(params)
     if empty_field = params.detect {|k, v| v.empty?}[0].to_s
-      flash[:warning]: "Please enter #{empty_field}"
+      flash[:warning] = "Please enter #{empty_field}"
       redirect '/signup'
     elsif User.find_by(:username => params[:username])
       flash[:warning] = "Sorry! That username has already been used."
