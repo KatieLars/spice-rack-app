@@ -1,8 +1,11 @@
+require 'sinatra/flash'
+
 class AppController < Sinatra::Base
   configure do
     set :views, 'app/views'
     enable :sessions
     set :session_secret, "secret"
+    register Sinatra::Flash
   end
 
   get '/' do
@@ -31,14 +34,24 @@ class AppController < Sinatra::Base
   get '/signup' do
     if logged_in?
       @user = current_user
-      redirect '/user'
+      redirect "/#{@user.slug}/home"
     else
       erb :"users/signup"
     end
   end
 
   post '/signup' do
-
+    user = User.new(params)
+    if empty_field = params.detect {|k, v| v.empty?}[0].to_s
+      flash[:warning]: "Please enter #{empty_field}"
+      redirect '/signup'
+    elsif User.find_by(:username => params[:username])
+      flash[:warning] = "Sorry! That username has already been used."
+      redirect '/signup'
+    elsif !User.find_by(:username => params[:username]) && user.save
+      session[:user_id] = user.id
+      redirect "/#{user.slug}/home"
+    end
   end
 
   get '/:slug/home' do

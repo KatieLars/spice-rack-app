@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
   has_many :recipe_spice_flavors
   has_many :spices
   validates_presence_of :username, :password, :email
+  validates :username, uniqueness: true
   has_secure_password
 
   def slug
