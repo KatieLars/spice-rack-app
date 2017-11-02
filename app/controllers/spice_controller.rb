@@ -10,5 +10,11 @@ class SpiceController < AppController
     end
   end
 
+  get '/spices/flavors' do
+    if logged_in?
+      #should group spices by pre-uploaded flavor profiles
+    end
+  end
+
 
 end
