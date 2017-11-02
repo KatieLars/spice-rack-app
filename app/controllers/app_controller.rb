@@ -14,15 +14,39 @@ class AppController < Sinatra::Base
       erb :login
     else
       @user = current_user
-      erb :"users/home"
+      redirect "/#{@user.slug}/home"
+    end
+  end
+
+  post '/login' do
+    user = User.find_by(:username => params[:username])
+    if user && user.authenticate(params[:password])
+      session[:user_id] = user.id
+      redirect "/#{user.slug}/home"
+    else
+      redirect "/signup"
     end
   end
 
   get '/signup' do
     if logged_in?
-      redirect '/spices'
+      @user = current_user
+      redirect '/user'
     else
       erb :"users/signup"
+    end
+  end
+
+  post '/signup' do
+
+  end
+
+  get '/:slug/home' do
+    @user = User.find_by_slug(params[:slug])
+    if current_user
+      erb :"users/home"
+    else
+      redirect "/login"
     end
   end
 
