@@ -1,5 +1,11 @@
 <h1>Your Spices</h1>
 
+<p>Select a spice to view or edit</p>
+
 <%@spices.each.with_index(1) do |spice| %>
-  <%=index%>. <a href="/spices/<%=spice.name.slug%>"><%=spice.name%></a>
-<%end%>
+  <%=index%>. <a href="/spices/<%=spice.slug%>"><%=spice.name%></a>
+<%end%><br>
+
+<h3><a href="/spices/new">Add a Spice</a></h3>
+
+<a href="/<%=@user.slug%>/home">Home</a>  <a href="/recipes">Recipes</a>  <a href="/logout">Logout</a>
