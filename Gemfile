@@ -10,5 +10,5 @@ gem 'thin'
 gem 'shotgun'
 gem 'pry'
 gem 'bcrypt'
-gem "tux"
+gem 'tux', '~> 0.3.0'
 gem 'sinatra-flash'
