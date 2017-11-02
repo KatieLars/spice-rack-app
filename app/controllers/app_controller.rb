@@ -9,6 +9,15 @@ class AppController < Sinatra::Base
     erb :home
   end
 
+  get '/login' do
+    if !logged_in?
+      erb :login
+    else
+      @user = current_user
+      erb :"users/home"
+    end
+  end
+
   get '/signup' do
     if logged_in?
       redirect '/spices'
