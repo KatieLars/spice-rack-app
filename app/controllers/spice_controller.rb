@@ -10,7 +10,7 @@ class SpiceController < AppController
     end
   end
 
-  get '/spices/flavors' do #will this get all spice from any user or just the spices from the user profile?
+  get '/spices/flavors' do #index by flavor
     @user = current_user
     if current_user
       @flavors = current_user.flavors
@@ -20,7 +20,21 @@ class SpiceController < AppController
     end
   end
 
-  
+get '/spices/:slug' do #show
+  @spice = Spice.find_by_slug(params[:slug])
+  if current_user
+    erb :"spices/show"
+  else
+    redirect '/login'
+  end
+end
 
+get '/spices/new' do #new spice form
+  if current_user
+    erb :"spices/new"
+  else
+    redirect '/login'
+  end
+end
 
 end
