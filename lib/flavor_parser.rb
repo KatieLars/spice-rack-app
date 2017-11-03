@@ -1,4 +1,7 @@
 class FlavorParser
- #parse list of flavors--these should be preloaded into database when program starts
- 
+
+  def class_builder(flavor_list)
+    flavor_list.each {|flavor| flavor = Flavor.find_or_create_by(name: flavor)}
+  end
+  
 end
