@@ -1,12 +1,12 @@
 <h1>Your Spices</h1>
-
-<p>Select a spice to view or edit</p>
-
-<%@spices.each.with_index(1) do |spice| %>
-  <%=index%>. <a href="/spices/<%=spice.slug%>"><%=spice.name%></a>
+<%if flash[:notification]%>
+  <%=flash[:notification]%>
+<%else%>
+  <p>Select a spice to view or edit</p>
+  <%@spices.each.with_index(1) do |spice| %>
+    <%=index%>. <a href="/spices/<%=spice.slug%>"><%=spice.name%></a>
+  <%end%>
 <%end%>
-
-
 
 <h3><a href="/spices/new">Add a Spice</a></h3>
 <h3><a href="/spices/flavors">See spices by flavor profile</a></h3>

@@ -5,11 +5,11 @@ class Spice < ActiveRecord::Base
   validates_presence_of :name
 
   def slug
-    username.downcase.gsub(" ", "-")
+    name.downcase.gsub(" ", "-")
   end
 
   def self.find_by_slug(slug)
-    user_name = slug.gsub("-", " ").upcase
-    self.all.detect {|user| user.username.upcase == user_name}
+    spice_name = slug.gsub("-", " ").upcase
+    self.all.detect {|spice| spice.name.upcase == spice_name}
   end
 end

@@ -2,8 +2,11 @@ class SpiceController < AppController
 
   get '/spices' do #index
     @user = User.find_by_id(session[:user_id])
-    if logged_in?
+    if current_user && @user.spices.any?
       @spices = @user.spices
+      erb :"spices/index"
+    elsif current_user && @user.spices.none?
+      flash[:notification] = "Your spice rack is empty"
       erb :"spices/index"
     else
       redirect "/"
@@ -44,6 +47,9 @@ get '/spices/new' do #new spice form
   end
 end
 
-get
+post '/spices/new' do
+  raise params.inspect
+
+end
 
 end
