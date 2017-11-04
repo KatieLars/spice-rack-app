@@ -1,0 +1,23 @@
+<h1>Add a Spice</h1>
+
+{spice => {name =>"name", flavor_id => "flavor_id", recipe_ids => [array of recipe.ids]}
+  recipes => {name => "name", url => "url"}
+}
+<form action="/spices/new" method="POST">
+  <p>Name: <input type="text" name="spice[name]"></p>
+  <p>Choose one of the following flavor profiles:</p>
+  <% Flavor.all.each do |flavor|%>
+    <input type="checkbox" name="spice[flavor_id]" value="<%= flavor.id%>">
+    <%=flavor.name%></input>
+  <%end%>
+  <p>Choose a recipe from the drop down menu or add a new recipe</p>
+  <select>
+    <% @user.recipes.each do |recipe|%>
+      <option name="spices[recipe_ids][]" value="<%recipe.id%>"><%=recipe.name%></option>
+    <%end%>
+  </select>
+  <p>New Recipe</p>
+  <p>Name: <input type="text" name="recipe[name]"></p>
+  <p>URL: <input type="text" name="recipe[url]"></p>
+  <input type="submit" name="create" value="Add">
+</p>

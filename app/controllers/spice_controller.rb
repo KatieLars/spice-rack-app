@@ -36,11 +36,14 @@ get '/spices/:slug' do #show
 end
 
 get '/spices/new' do #new spice form
+  @user = current_user
   if current_user
     erb :"spices/new"
   else
     redirect '/login'
   end
 end
+
+get
 
 end
