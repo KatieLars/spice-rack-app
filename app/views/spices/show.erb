@@ -1,0 +1,13 @@
+
+<%=styled_flash%>
+<h1><%=@spice.name%></h1>
+<h2><%=@spice.flavor%></h2>
+
+<%if @spice%>
+  <h2>Recipes</h2>
+  <%@spice.recipes.each.with_index(1) do |recipe, index|%>
+    <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a>
+  <%end%>
+<%else%>
+  <br></br>
+<%end%>
