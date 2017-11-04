@@ -1,4 +1,5 @@
 require 'sinatra/flash'
+require 'tux'
 
 class AppController < Sinatra::Base
   configure do

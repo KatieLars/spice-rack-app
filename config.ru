@@ -6,5 +6,6 @@ end
 
 use Rack::MethodOverride
 use SpiceController
+use RecipeController
 
 run AppController
