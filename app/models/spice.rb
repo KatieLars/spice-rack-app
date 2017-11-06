@@ -9,12 +9,7 @@ class Spice < ActiveRecord::Base
   end
 
   def self.find_by_slug(slug)
-    if slug.split.size > 1
       spice_name = slug.gsub("-", " ").upcase
       self.all.detect {|spice| spice.name.upcase == spice_name}
-    else
-      spice_name = slug.upcase
-      self.all.detect {|spice| spice.name.upcase == spice_name}
-    end
   end
 end

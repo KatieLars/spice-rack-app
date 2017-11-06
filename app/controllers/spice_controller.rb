@@ -43,7 +43,8 @@ post '/spices/new' do #should create a new spice and recipe
 end
 
 get '/spices/:slug' do #show
-  slug_spice = Spice.find_by_slug(:slug)
+
+  slug_spice = Spice.find_by_slug(params[:slug])
   customer_spice = Spice.find_by(:user_id => session[:user_id])
   if current_user && (slug_spice == customer_spice) #if the spice found by the slug and by the id is the same
     #sets the spice to an instance variable
