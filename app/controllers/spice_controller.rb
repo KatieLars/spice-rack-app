@@ -37,8 +37,8 @@ get '/spices/new' do #new spice form
 end
 
 post '/spices/new' do #should create a new spice and recipe
-  if current_user #need to join Spices and Recipes
-    spice = Spice.create(params[:spice])
+  spice = Spice.new(params[:spice])
+  if current_user && spice.save 
     spice.update(:user_id => session[:user_id])
     recipe = Recipe.create(params[:recipe])
     recipe.update(:user_id => session[:user_id])
@@ -68,11 +68,25 @@ get '/spices/:slug' do #show
 end
 
 get '/spices/:slug/edit' do
+  @user = current_user
   if current_user
     @spice = Spice.find_by_slug(params[:slug])
     erb :"spices/edit"
   else
     redirect '/login'
   end
+end
+
+patch '/spices/:slug/edit' do #needs to update spice info
+  #info to update:
+    #flavor, recipes, name
+  #creates a new recipe if need be
+  #if the user leaves anything blank, does not update or create new object
+  spice = Spice.find_by_slug(params[:slug])
+  customer_spice = Spice.find_by(:user_id => session[:user_id], :name => spice.name)
+  if current_user
+    customer_spice.update
+  end
+
 end
 end
