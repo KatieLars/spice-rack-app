@@ -23,6 +23,25 @@ class SpiceController < AppController
     end
   end
 
+get '/spices/new' do #new spice form
+  @user = current_user
+  if current_user
+    erb :"spices/new"
+  else
+    redirect '/login'
+  end
+end
+
+post '/spices/new' do #should create a new spice and recipe
+  spice = Spice.create(params[:spice])
+  if current_user
+    Recipe.create(params[:recipe])
+    redirect "/spices/#{spice.slug}"
+  else
+    redirect '/login'
+  end
+end
+
 get '/spices/:slug' do #show
   slug_spice = Spice.find_by_slug(:slug)
   customer_spice = Spice.find_by(:user_id => session[:user_id])
@@ -36,20 +55,6 @@ get '/spices/:slug' do #show
   else #if user not logged in
     redirect '/login'
   end
-end
-
-get '/spices/new' do #new spice form
-  @user = current_user
-  if current_user
-    erb :"spices/new"
-  else
-    redirect '/login'
-  end
-end
-
-post '/spices/new' do
-  raise params.inspect
-
 end
 
 end
