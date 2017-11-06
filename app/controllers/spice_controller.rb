@@ -38,13 +38,16 @@ end
 
 post '/spices/new' do #should create a new spice and recipe
   spice = Spice.new(params[:spice])
-  if current_user && spice.save 
+  if current_user && spice.save
     spice.update(:user_id => session[:user_id])
+
     recipe = Recipe.create(params[:recipe])
     recipe.update(:user_id => session[:user_id])
     recipe.spices << spice
-
     redirect "/spices/#{spice.slug}"
+  elsif current_user && !spice.save
+    flash.now[:blank_warning] = "Spice name cannot be blank"
+    redirect '/spices/new'
   else
     redirect '/login'
   end
