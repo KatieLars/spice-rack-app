@@ -4,7 +4,7 @@
   <p>Name: <input type="text" name="spice[name]"></p>
   <p>Choose one of the following flavor profiles:</p>
   <% Flavor.all.each do |flavor|%>
-    <input type="checkbox" name="spice[flavor_id]" value="<%= flavor.id%>">
+    <input type="radio" name="spice[flavor_id]" value="<%= flavor.id%>">
     <%=flavor.name%></input>
   <%end%>
   <p>Choose a recipe from the drop down menu or add a new recipe</p>
