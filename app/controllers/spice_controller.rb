@@ -53,11 +53,10 @@ end
 get '/spices/:slug' do #show
   slug_spice = Spice.find_by_slug(params[:slug])
   customer_spice = Spice.find_by(:user_id => session[:user_id], :name => slug_spice.name)
-
+  @user = current_user
   if current_user && customer_spice #if the spice found by the slug and by the id is the same
     #sets the spice to an instance variable
     @spice = customer_spice
-    binding.pry
     erb :"spices/show"
   elsif current_user && !customer_spice
     #if customer logged in, but the slug spice is not in his/her rack
@@ -67,13 +66,13 @@ get '/spices/:slug' do #show
     redirect '/login'
   end
 end
-#helper methods
-   def find_figure_titles(title_ids) #array
-     title_ids.collect {|title_id| Title.find_by_id(title_id)}
-   end
 
-   def find_figure_landmarks(landmark_ids) #array
-     landmark_ids.collect {|landmark_id| Landmark.find_by_id(landmark_id)}
-   end
-
+get '/spices/:slug/edit' do
+  if current_user
+    @spice = Spice.find_by_slug(params[:slug])
+    erb :"spices/edit"
+  else
+    redirect '/login'
+  end
+end
 end

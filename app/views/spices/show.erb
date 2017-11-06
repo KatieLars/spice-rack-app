@@ -1,7 +1,7 @@
 
 <%=flash[:spice_warning]%>
 <h1><%=@spice.name%></h1>
-<h2><%=@spice.flavor%></h2>
+<h4><%=@spice.flavor.name%></h4>
 
 <%if @spice%>
   <h2>Recipes</h2>
@@ -9,3 +9,9 @@
     <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a>
   <%end%>
 <%end%>
+<br></br>
+<form action="/spices/<%=@spice.slug%>/edit" method="GET">
+  <input type="submit" value="Edit">
+</form>
+<br></br>
+<a href="/<%=@user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>
