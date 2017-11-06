@@ -37,13 +37,12 @@ get '/spices/new' do #new spice form
 end
 
 post '/spices/new' do #should create a new spice and recipe
-  spice = Spice.create(params[:spice])
-  if current_user
-    spice.user_id = session[:user_id]
-    spice.save
+  if current_user #need to join Spices and Recipes
+    spice = Spice.create(params[:spice])
+    spice.update(:user_id => session[:user_id])
     recipe = Recipe.create(params[:recipe])
-    recipe.user_id = session[:user_id]
-    binding.pry
+    recipe.update(:user_id => session[:user_id])
+    recipe.spices << spice
 
     redirect "/spices/#{spice.slug}"
   else
@@ -58,6 +57,7 @@ get '/spices/:slug' do #show
   if current_user && customer_spice #if the spice found by the slug and by the id is the same
     #sets the spice to an instance variable
     @spice = customer_spice
+    binding.pry
     erb :"spices/show"
   elsif current_user && !customer_spice
     #if customer logged in, but the slug spice is not in his/her rack
@@ -67,5 +67,13 @@ get '/spices/:slug' do #show
     redirect '/login'
   end
 end
+#helper methods
+   def find_figure_titles(title_ids) #array
+     title_ids.collect {|title_id| Title.find_by_id(title_id)}
+   end
+
+   def find_figure_landmarks(landmark_ids) #array
+     landmark_ids.collect {|landmark_id| Landmark.find_by_id(landmark_id)}
+   end
 
 end
