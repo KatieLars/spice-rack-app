@@ -1,4 +1,7 @@
+require 'sinatra/flash'
+
 class SpiceController < AppController
+  register Sinatra::Flash
 
   get '/spices' do #index
     @user = User.find_by_id(session[:user_id])
@@ -6,7 +9,8 @@ class SpiceController < AppController
       @spices = @user.spices
       erb :"spices/index"
     elsif current_user && @user.spices.none?
-      flash[:empty_notification] = "Your spice rack is empty" #flash notification not working
+
+      flash.now[:empty_notification] = "Your spice rack is empty" #flash notification not working
       erb :"spices/index"
     else
       redirect "/"
@@ -33,11 +37,13 @@ get '/spices/new' do #new spice form
 end
 
 post '/spices/new' do #should create a new spice and recipe
-  spice = Spice.new(params[:spice])
+  spice = Spice.create(params[:spice])
   if current_user
     spice.user_id = session[:user_id]
     spice.save
-    Recipe.create(params[:recipe])
+    recipe = Recipe.create(params[:recipe])
+    binding.pry
+
     redirect "/spices/#{spice.slug}"
   else
     redirect '/login'
