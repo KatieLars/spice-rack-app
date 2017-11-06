@@ -1,1 +1,10 @@
-<h1>Hello!</h1>
+<h1>Edit <%=@spice.name%></h1>
+
+<form action="/spices/<%=@spice.slug%>/edit" method="POST">
+  <input type="hidden" id="hidden" name="_method" value="patch">
+  <p>Name: <input type="text" name="spice[name]" placeholder="<%=@spice.name%>"></p>
+  <p>Choose one of the following flavor profiles:</p>
+  <% Flavor.all.each do |flavor|%>
+    <input type="checkbox" name="spice[flavor_id]" value="<%= flavor.id%>" <%= 'checked' if @spice.flavor.include?(flavor)%>>
+    <%=flavor.name%></input>
+  <%end%>
