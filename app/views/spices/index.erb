@@ -1,9 +1,9 @@
 <h1>Your Spices</h1>
 
-<%=styled_flash class="flash empty_notification"%>
+<%=flash[:empty_notification]%>
 <%if @user.spices.any?%>
   <p>Select a spice to view or edit</p>
-  <%@spices.each.with_index(1) do |spice| %>
+  <%@spices.each.with_index(1) do |spice, index| %>
     <%=index%>. <a href="/spices/<%=spice.slug%>"><%=spice.name%></a>
   <%end%>
 <%end%>

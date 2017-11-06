@@ -8,6 +8,4 @@
   <%@spice.recipes.each.with_index(1) do |recipe, index|%>
     <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a>
   <%end%>
-<%else%>
-  <br></br>
 <%end%>

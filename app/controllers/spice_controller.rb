@@ -6,7 +6,6 @@ class SpiceController < AppController
       @spices = @user.spices
       erb :"spices/index"
     elsif current_user && @user.spices.none?
-      binding.pry
       flash[:empty_notification] = "Your spice rack is empty" #flash notification not working
       erb :"spices/index"
     else
@@ -47,13 +46,13 @@ end
 
 get '/spices/:slug' do #show
   slug_spice = Spice.find_by_slug(params[:slug])
-  customer_spice = Spice.find_by(:user_id => session[:user_id])
-  if current_user && (slug_spice == customer_spice) #if the spice found by the slug and by the id is the same
+  customer_spice = Spice.find_by(:user_id => session[:user_id], :name => slug_spice.name)
+
+  if current_user && customer_spice #if the spice found by the slug and by the id is the same
     #sets the spice to an instance variable
-    @spice = slug_spice
+    @spice = customer_spice
     erb :"spices/show"
-  elsif current_user && !(slug_spice == customer_spice)
-    binding.pry
+  elsif current_user && !customer_spice
     #if customer logged in, but the slug spice is not in his/her rack
     flash[:spice_warning] = "This spice is not in your rack."
     erb :"spices/show"
