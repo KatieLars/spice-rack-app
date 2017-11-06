@@ -42,6 +42,7 @@ post '/spices/new' do #should create a new spice and recipe
     spice.user_id = session[:user_id]
     spice.save
     recipe = Recipe.create(params[:recipe])
+    recipe.user_id = session[:user_id]
     binding.pry
 
     redirect "/spices/#{spice.slug}"
