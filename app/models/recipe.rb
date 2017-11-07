@@ -4,7 +4,7 @@ class Recipe < ActiveRecord::Base
   has_many :spices, through: :recipe_spice_flavors
   belongs_to :user
   validates_presence_of :name
-  validates :name, uniqueness: true
+
 
   def slug
     name.downcase.gsub(" ", "-")
