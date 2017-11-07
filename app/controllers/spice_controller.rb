@@ -39,13 +39,12 @@ end
 post '/spices/new' do #should create a new spice and recipe
   spice = Spice.new(params[:spice])
   recipe = Recipe.new(params[:recipe])
-#makes a new recipe even if blank, but does not persist
   if repeat_spices_or_recipes(current_user.spices, spice)
-    flash.now[:repeat_spice] = "#{spice.name.capitalize} is already in your rack"
+    flash.next[:repeat_spice] = "#{spice.name.capitalize} is already in your rack"
     redirect "/spices/#{spice.slug}"
     #if new spice already exists in user's rack
   elsif repeat_spices_or_recipes(current_user.recipes, recipe)
-    flash.now[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
+    flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
     redirect "/recipes/#{recipe.slug}"
     #if recipe already exists for user (recipe names must be unique)
   elsif current_user && spice.save && recipe.save #&& !params[:spice][:recipe_ids].empty? #validations kick in--none of the names can be blank
@@ -56,10 +55,10 @@ post '/spices/new' do #should create a new spice and recipe
     spice.save
     redirect "/spices/#{spice.slug}"
   elsif current_user && spice.save && !recipe.save #&& params[:spice][:recipe_ids].empty?
-    flash.now[:blank_warning] = "Recipe name cannot be blank"
+    flash.next[:blank_warning] = "Recipe name cannot be blank"
     redirect '/spices/new'
   elsif current_user && !spice.save
-    flash.now[:blank_warning] = "Spice name cannot be blank"
+    flash.next[:blank_warning] = "Spice name cannot be blank"
     redirect '/spices/new'
   else
     redirect '/login'
@@ -106,10 +105,9 @@ patch '/spices/:slug/edit' do #needs to update spice info
 end
 
 #helper methods
-def repeat_spices_or_recipes(current_user_array, comp_obj) #array from current_user.spices
+def repeat_spices_or_recipes(current_user_array, comp_obj)
   #detects blank or repeat spices or recipes
   current_user_array.detect {|obj| comp_obj.name.upcase == obj.name.upcase}
-
 end
 
 end
