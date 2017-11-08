@@ -13,7 +13,7 @@
 <form action="/spices/<%=@spice.slug%>/edit" method="GET">
   <input type="submit" value="Edit">
 </form>
-<form action="/spices/delete" method="POST">
+<form action="/spices/<%=@spice.slug%>/delete" method="POST">
   <input type="hidden" id="hidden" name="_method" value="delete">
   <input type="submit" value="Delete">
 </form>
