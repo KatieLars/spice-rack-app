@@ -2,17 +2,12 @@
 <h2>Select a spice for more info or to edit.</h2>
 
 <%@flavors.each do |flavor|%>
-  <%if !flavor.name.empty?%>
   <ul><h3><%=flavor.name%></h3>
-      <%flavor.spices.each do |spice|%>
+  <%flavor.spices.each do |spice|%>
+      <% if spice.user_id == @user.id%>
         <li><a href="/spices/<%=spice.slug%>"><%=spice.name%></a></li>
-      <%end%></ul><br></br>
-  <%elsif flavor.name.empty?%>
-    <ul><h3>Unknown Flavors</h3>
-      <%flavor.spices.each do |spice|%>
-        <li><a href="/spices/<%=spice.slug%>"><%=spice.name%></a></li>
-      <%end%></ul><br></br>
+      <%end%>
+    <%end%></ul>
   <%end%>
-<%end%>
 
 <a href="/<%=@user.slug%>/home">Home</a>  <a href="/recipes">Recipes</a>  <a href="/logout">Logout</a>

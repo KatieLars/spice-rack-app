@@ -9,7 +9,7 @@
     <input type="radio" name="spice[flavor_id]" value="<%= flavor.id%>">
     <%=flavor.name%></input>
   <%end%>
-  <p>Choose a recipe from the drop down menu or add a new recipe</p>
+  <p>Choose a recipe and/or add a new recipe</p>
     <% @user.recipes.each do |recipe|%>
       <input type="checkbox" name="spice[recipe_ids][]" value="<%=recipe.id%>"><%=recipe.name%></input>
     <%end%>

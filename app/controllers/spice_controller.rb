@@ -20,7 +20,7 @@ class SpiceController < AppController
   get '/spices/flavors' do #index by flavor
     @user = current_user
     if current_user
-      @flavors = current_user.flavors
+      @flavors = current_user.flavors.uniq
       erb :"spices/flavors"
     else
       redirect '/login'
@@ -59,14 +59,14 @@ post '/spices/new' do #should create a new spice and recipe
       old_recipe = Recipe.find_by_id(recipe_id)
       old_recipe.update(:user_id => session[:user_id])
       spice.recipes << old_recipe unless repeat_spices_or_recipes(current_user.recipes, old_recipe)
-    end
+    end #updates unless old recipe is a repeat recipe
     spice.save
     redirect "/spices/#{spice.slug}"
   elsif current_user && spice.save && !recipe.save && !!params[:spice][:recipe_ids]
     #current_user, valid spice, recipe NOT valid, and recipe_ids
     params[:spice][:recipe_ids].each do |recipe_id|
       old_recipe = Recipe.find_by_id(recipe_id)
-      old_recipe.update(:user_id => session[:user_id])
+      #old_recipe.update(:user_id => session[:user_id])
       spice.update(:user_id => session[:user_id])
       spice.recipes << old_recipe unless repeat_spices_or_recipes(current_user.recipes, old_recipe)
       spice.save
@@ -114,14 +114,50 @@ get '/spices/:slug/edit' do
 end
 
 patch '/spices/:slug/edit' do #needs to update spice info
+
   #info to update:
     #flavor, recipes, name
   #creates a new recipe if need be
   #if the user leaves anything blank, does not update or create new object
   spice = Spice.find_by_slug(params[:slug])
   customer_spice = Spice.find_by(:user_id => session[:user_id], :name => spice.name)
-  if current_user
-    customer_spice.update
+  if current_user && customer_spice && repeat_spices_or_recipes(current_user.recipes, recipe)
+    #valid user, repeat recipe attempted to be made
+    flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
+    redirect "/spices/#{customer_spice.slug}"
+  elsif current_user && customer_spice && !params[:recipe] && !params[:spices][:recipe_ids]
+    #valid user, valid spice, no recipe params, no recipe_ids
+    current_spice.update(params[:spice])
+    flash.next[:update_spice] = "#{customer_spice.name} updated!"
+    redirect "/spices/#{customer_spice.slug}"
+  elsif current_user && customer_spice && !!params[:recipe] && !params[:spices][:recipe_ids]
+    #valid user, valid spice, new recipe params, no previous recipes
+    customer_spice.update(params[:spice])
+    recipe = Recipe.create(params[:recipe])
+    recipe.update(:user_id => session[:user_id])
+    customer_spice << recipe
+    customer_spice.save
+    flash.next[:update_spice] = "#{customer_spice.name} updated!"
+    redirect "/spices/#{customer_spice.slug}"
+  elsif current_user && customer_spice && !!params[:recipe] && !!params[:spices][:recipe_ids]
+    #valid user, valid spice, recipe params, recipe_ids
+    customer_spice(params[:spice])
+    recipe = Recipe.create(params[:recipe])
+    recipe.update(:user_id => session[:user_id])
+    customer_spice << recipe
+    params[:spices][:recipe_ids].each {|recipe_id| customer_spice << Recipe.find_by_id(recipe_id)}
+    customer_spice.save
+    flash.next[:update_spice] = "#{customer_spice.name} updated!"
+    redirect "/spices/#{customer_spice.slug}"
+  elsif current_user && customer_spice && !params[:recipe] && !!params[:spices][:recipe_ids]
+    #valid customer, valid spice, no new recipes created, and new recipe_ids
+    customer_spice(params[:spice])
+    params[:spices][:recipe_ids].each {|recipe_id| customer_spice << Recipe.find_by_id(recipe_id)}
+    customer_spice.save
+    flash.next[:update_spice] = "#{customer_spice.name} updated!"
+    redirect "/spices/#{customer_spice.slug}"
+  else
+    redirect '/login'
   end
 end
 
@@ -130,5 +166,14 @@ def repeat_spices_or_recipes(current_user_array, comp_obj)
   #detects blank or repeat spices or recipes, returns non-repeat obj
   current_user_array.detect {|obj| comp_obj.name.upcase == obj.name.upcase}
 end
+
+def blank_recipe_spice_params(params_hash)
+  if !!params_hash.values
+    #if there are values in the recipe hash
+    recipe = Recipe.new(params_hash)
+  end
+  recipe
+end
+
 
 end
