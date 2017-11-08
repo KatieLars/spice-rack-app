@@ -9,11 +9,9 @@
     <%=flavor.name%></input>
   <%end%>
   <p>Choose a recipe from the drop down menu or add a new recipe</p>
-  <select multiple size="1">
     <% @user.recipes.each do |recipe|%>
-      <option type="checkbox" name="spices[recipe_ids][]" value="<%recipe.id%>"><%=recipe.name %></option>
+      <input type="checkbox" name="spices[recipe_ids][]" value="<%recipe.id%>"><%=recipe.name %></input>
     <%end%>
-  </select>
   <p>New Recipe</p>
   <p>Name: <input type="text" name="recipe[name]"></p>
   <p>URL: <input type="text" name="recipe[url]"></p>

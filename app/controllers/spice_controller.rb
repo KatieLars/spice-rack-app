@@ -39,7 +39,10 @@ end
 post '/spices/new' do #should create a new spice and recipe
   spice = Spice.new(params[:spice])
   recipe = Recipe.new(params[:recipe])
-  if repeat_spices_or_recipes(current_user.spices, spice)
+  if current_user && !spice.save
+    flash.next[:blank_warning] = "Spice name cannot be blank"
+    redirect '/spices/new'
+  elsif repeat_spices_or_recipes(current_user.spices, spice)
     flash.next[:repeat_spice] = "#{spice.name.capitalize} is already in your rack"
     redirect "/spices/#{spice.slug}"
     #if new spice already exists in user's rack
@@ -47,19 +50,38 @@ post '/spices/new' do #should create a new spice and recipe
     flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
     redirect "/recipes/#{recipe.slug}"
     #if recipe already exists for user (recipe names must be unique)
-  elsif current_user && spice.save && recipe.save #&& !params[:spice][:recipe_ids].empty? #validations kick in--none of the names can be blank
-    #if user logged in, spice is valid, and recipe is valid and there are recipe_ids
+  elsif current_user && spice.save && recipe.save && params[:spice][:recipe_ids]
+    #current_user, valid spice, valid recipe, recipe_ids
+    spice.update(:user_id => session[:user_id])
+    recipe.update(:user_id => session[:user_id])
+    spice.recipes << recipe
+    params[:spice][:recipe_ids].each do |recipe_id|
+      old_recipe = Recipe.find_by_id(recipe_id)
+      old_recipe.update(:user_id => session[:user_id])
+      spice.recipes << old_recipe unless repeat_spices_or_recipes(current_user.recipes, old_recipe)
+    end
+    spice.save
+    redirect "/spices/#{spice.slug}"
+  elsif current_user && spice.save && !recipe.save && !!params[:spice][:recipe_ids]
+    #current_user, valid spice, recipe NOT valid, and recipe_ids
+    params[:spice][:recipe_ids].each do |recipe_id|
+      old_recipe = Recipe.find_by_id(recipe_id)
+      old_recipe.update(:user_id => session[:user_id])
+      spice.update(:user_id => session[:user_id])
+      spice.recipes << old_recipe unless repeat_spices_or_recipes(current_user.recipes, old_recipe)
+      spice.save
+    end
+    redirect "/spices/#{spice.slug}"
+  elsif current_user && spice.save && recipe.save && !params[:spice][:recipe_ids]
+    #current_user, valid spice, valid recipe, and no recipe_ids
     spice.update(:user_id => session[:user_id])
     recipe.update(:user_id => session[:user_id])
     spice.recipes << recipe
     spice.save
     redirect "/spices/#{spice.slug}"
-  elsif current_user && spice.save && !recipe.save #&& params[:spice][:recipe_ids].empty?
-    flash.next[:blank_warning] = "Recipe name cannot be blank"
-    redirect '/spices/new'
-  elsif current_user && !spice.save
-    flash.next[:blank_warning] = "Spice name cannot be blank"
-    redirect '/spices/new'
+  elsif current_user && spice.save && !recipe.save && !params[:spice][:recipe_ids]
+    spice.update(:user_id => session[:user_id])
+    redirect "/spices/#{spice.slug}"
   else
     redirect '/login'
   end
@@ -69,14 +91,13 @@ get '/spices/:slug' do #show
   slug_spice = Spice.find_by_slug(params[:slug])
   customer_spice = Spice.find_by(:user_id => session[:user_id], :name => slug_spice.name)
   @user = current_user
-  if current_user && customer_spice #if the spice found by the slug and by the id is the same
-    #sets the spice to an instance variable
+  if current_user && customer_spice
     @spice = customer_spice
     erb :"spices/show"
   elsif current_user && !customer_spice
     #if customer logged in, but the slug spice is not in his/her rack
-    flash[:spice_warning] = "This spice is not in your rack."
-    erb :"spices/show"
+    flash.now[:spice_warning] = "This spice is not in your rack."
+    erb :"spices/new"
   else #if user not logged in
     redirect '/login'
   end
@@ -106,7 +127,7 @@ end
 
 #helper methods
 def repeat_spices_or_recipes(current_user_array, comp_obj)
-  #detects blank or repeat spices or recipes
+  #detects blank or repeat spices or recipes, returns non-repeat obj
   current_user_array.detect {|obj| comp_obj.name.upcase == obj.name.upcase}
 end
 

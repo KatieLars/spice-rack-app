@@ -1,7 +1,9 @@
-<%=flash[:repeat_spice]%>
+<%=styled_flash%>
 
 <h1><%=@spice.name%></h1>
-<h4><%=@spice.flavor.name%></h4>
+<%if !!@spice.flavor%>
+  <h4><%=@spice.flavor.name%></h4>
+<%end%>
 
 <%if @spice%>
   <h2>Recipes</h2>
