@@ -114,45 +114,52 @@ get '/spices/:slug/edit' do
 end
 
 patch '/spices/:slug/edit' do #needs to update spice info
-
-  #info to update:
-    #flavor, recipes, name
-  #creates a new recipe if need be
-  #if the user leaves anything blank, does not update or create new object
   spice = Spice.find_by_slug(params[:slug])
   customer_spice = Spice.find_by(:user_id => session[:user_id], :name => spice.name)
-  if current_user && customer_spice && repeat_spices_or_recipes(current_user.recipes, recipe)
-    #valid user, repeat recipe attempted to be made
-    flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
-    redirect "/spices/#{customer_spice.slug}"
-  elsif current_user && customer_spice && !params[:recipe] && !params[:spices][:recipe_ids]
+  #binding.pry
+  if current_user && customer_spice && !!params[:recipe].has_value?("") && !params[:spice][:recipe_ids]
     #valid user, valid spice, no recipe params, no recipe_ids
     current_spice.update(params[:spice])
     flash.next[:update_spice] = "#{customer_spice.name} updated!"
     redirect "/spices/#{customer_spice.slug}"
-  elsif current_user && customer_spice && !!params[:recipe] && !params[:spices][:recipe_ids]
-    #valid user, valid spice, new recipe params, no previous recipes
-    customer_spice.update(params[:spice])
-    recipe = Recipe.create(params[:recipe])
-    recipe.update(:user_id => session[:user_id])
-    customer_spice << recipe
-    customer_spice.save
+  elsif current_user && customer_spice && !params[:recipe].has_value?("") && !params[:spice][:recipe_ids]
+    #valid user, valid spice, has new recipe params, no previous recipes
+
+    customer_spice.update(name: params[:spice][:name]) unless params[:spice][:name].empty?
+    customer_spice.update(flavor_id: params[:spice][:flavor_id])
+    recipe = Recipe.new(params[:recipe])
+    if !!repeat_spices_or_recipes(current_user.recipes, recipe)
+      #if the recipe us not a repeat
+      recipe.update(:user_id => session[:user_id])
+      customer_spice.recipes << recipe
+      customer_spice.save
+    else
+      flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
+      redirect "/spices/#{customer_spice.slug}"
+    end
     flash.next[:update_spice] = "#{customer_spice.name} updated!"
     redirect "/spices/#{customer_spice.slug}"
-  elsif current_user && customer_spice && !!params[:recipe] && !!params[:spices][:recipe_ids]
-    #valid user, valid spice, recipe params, recipe_ids
+  elsif current_user && customer_spice && !params[:recipe].has_value?("") && !!params[:spice][:recipe_ids]
+    #valid user, valid spice, has recipe params, recipe_ids
     customer_spice(params[:spice])
     recipe = Recipe.create(params[:recipe])
-    recipe.update(:user_id => session[:user_id])
-    customer_spice << recipe
-    params[:spices][:recipe_ids].each {|recipe_id| customer_spice << Recipe.find_by_id(recipe_id)}
+    if !repeat_spices_or_recipes(current_user.recipes, recipe)
+      #saves valid recipe and checks for repeats
+      recipe.update(:user_id => session[:user_id])
+      customer_spice.recipes << recipe
+      customer_spice.save
+    else
+      flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
+      redirect "/spices/#{customer_spice.slug}"
+    end
+    params[:spice][:recipe_ids].each {|recipe_id| customer_spice.recipes << Recipe.find_by_id(recipe_id)}
     customer_spice.save
     flash.next[:update_spice] = "#{customer_spice.name} updated!"
     redirect "/spices/#{customer_spice.slug}"
-  elsif current_user && customer_spice && !params[:recipe] && !!params[:spices][:recipe_ids]
+  elsif current_user && customer_spice && !!params[:recipe].has_value?("") && !!params[:spice][:recipe_ids]
     #valid customer, valid spice, no new recipes created, and new recipe_ids
     customer_spice(params[:spice])
-    params[:spices][:recipe_ids].each {|recipe_id| customer_spice << Recipe.find_by_id(recipe_id)}
+    params[:spice][:recipe_ids].each {|recipe_id| customer_spice.recipes << Recipe.find_by_id(recipe_id)}
     customer_spice.save
     flash.next[:update_spice] = "#{customer_spice.name} updated!"
     redirect "/spices/#{customer_spice.slug}"
@@ -165,6 +172,8 @@ end
 def repeat_spices_or_recipes(current_user_array, comp_obj)
   #detects blank or repeat spices or recipes, returns non-repeat obj
   current_user_array.detect {|obj| comp_obj.name.upcase == obj.name.upcase}
+  #iterates over an array of spice/recipe objects associated with user, and
+  #checks them against comp_obj to determine of the newly created comp_obj is a repeat
 end
 
 def blank_recipe_spice_params(params_hash)
