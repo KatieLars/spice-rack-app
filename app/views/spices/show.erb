@@ -15,5 +15,9 @@
 <form action="/spices/<%=@spice.slug%>/edit" method="GET">
   <input type="submit" value="Edit">
 </form>
-<br></br>
+<form action="/spices/delete" method="POST">
+  <input type="hidden" id="hidden" name="_method" value="delete">
+  <input type="submit" value="Delete">
+</form>
+
 <a href="/<%=@user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>

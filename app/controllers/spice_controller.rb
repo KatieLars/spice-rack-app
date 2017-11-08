@@ -116,20 +116,22 @@ end
 patch '/spices/:slug/edit' do #needs to update spice info
   spice = Spice.find_by_slug(params[:slug])
   customer_spice = Spice.find_by(:user_id => session[:user_id], :name => spice.name)
-  #binding.pry
   if current_user && customer_spice && !!params[:recipe].has_value?("") && !params[:spice][:recipe_ids]
     #valid user, valid spice, no recipe params, no recipe_ids
-    current_spice.update(params[:spice])
+    customer_spice.update(name: params[:spice][:name]) unless params[:spice][:name].empty?
+    customer_spice.update(flavor_id: params[:spice][:flavor_id])
+
+    customer_spice.recipes.clear
     flash.next[:update_spice] = "#{customer_spice.name} updated!"
     redirect "/spices/#{customer_spice.slug}"
   elsif current_user && customer_spice && !params[:recipe].has_value?("") && !params[:spice][:recipe_ids]
-    #valid user, valid spice, has new recipe params, no previous recipes
-
+    #valid user, valid spice, has new recipe params, no previous recipes checked
     customer_spice.update(name: params[:spice][:name]) unless params[:spice][:name].empty?
     customer_spice.update(flavor_id: params[:spice][:flavor_id])
-    recipe = Recipe.new(params[:recipe])
-    if !!repeat_spices_or_recipes(current_user.recipes, recipe)
-      #if the recipe us not a repeat
+    customer_spice.recipes.clear
+    recipe = Recipe.create(params[:recipe])
+    if !repeat_spices_or_recipes(current_user.recipes, recipe)
+      #if the recipe is not a repeat
       recipe.update(:user_id => session[:user_id])
       customer_spice.recipes << recipe
       customer_spice.save
@@ -141,7 +143,9 @@ patch '/spices/:slug/edit' do #needs to update spice info
     redirect "/spices/#{customer_spice.slug}"
   elsif current_user && customer_spice && !params[:recipe].has_value?("") && !!params[:spice][:recipe_ids]
     #valid user, valid spice, has recipe params, recipe_ids
-    customer_spice(params[:spice])
+    customer_spice.update(name: params[:spice][:name]) unless params[:spice][:name].empty?
+    customer_spice.update(flavor_id: params[:spice][:flavor_id])
+    customer_spice.recipes.clear
     recipe = Recipe.create(params[:recipe])
     if !repeat_spices_or_recipes(current_user.recipes, recipe)
       #saves valid recipe and checks for repeats
@@ -158,7 +162,10 @@ patch '/spices/:slug/edit' do #needs to update spice info
     redirect "/spices/#{customer_spice.slug}"
   elsif current_user && customer_spice && !!params[:recipe].has_value?("") && !!params[:spice][:recipe_ids]
     #valid customer, valid spice, no new recipes created, and new recipe_ids
-    customer_spice(params[:spice])
+    customer_spice.update(name: params[:spice][:name]) unless params[:spice][:name].empty?
+    customer_spice.update(flavor_id: params[:spice][:flavor_id])
+    customer_spice.recipes.clear
+  
     params[:spice][:recipe_ids].each {|recipe_id| customer_spice.recipes << Recipe.find_by_id(recipe_id)}
     customer_spice.save
     flash.next[:update_spice] = "#{customer_spice.name} updated!"

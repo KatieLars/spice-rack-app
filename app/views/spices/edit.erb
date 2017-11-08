@@ -10,9 +10,11 @@
   <%end%>
   <p>Choose a recipe and/or add a new recipe</p>
     <% @user.recipes.each do |recipe|%>
-      <input type="checkbox" name="spices[recipe_ids][]" value="<%recipe.id%>"><%=recipe.name %></input>
+
+      <input type="checkbox" name="spice[recipe_ids][]" value="<%=recipe.id%>" <%='checked' if @spice.recipes.include?(recipe)%>>
+      <%=recipe.name %></input>
     <%end%>
   <p>New Recipe</p>
   <p>Name: <input type="text" name="recipe[name]"></p>
   <p>URL: <input type="text" name="recipe[url]"></p>
-  <input type="submit" name="create" value="Add">
+  <input type="submit" name="create" value="Update">
