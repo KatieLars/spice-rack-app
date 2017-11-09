@@ -13,4 +13,14 @@ class RecipeController < AppController
     end
   end
 
+  get '/recipes/new' do #new spice form
+    @user = current_user
+    if current_user
+      erb :"recipes/new"
+    else
+      redirect '/login'
+    end
+  end
+
+
 end
