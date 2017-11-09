@@ -1,0 +1,2 @@
+class SiteGenerator
+end
