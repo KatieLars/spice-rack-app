@@ -57,16 +57,17 @@ class RecipeController < AppController
         spice.save
       end
       redirect "/recipes/#{recipe.slug}"
-    elsif current_user && spice.save && recipe.save && !params[:spice][:recipe_ids]
+    elsif current_user && recipe.save && spice.save && !params[:recipe][:spice_ids]
       #current_user, valid spice, valid recipe, and no recipe_ids
-      spice.update(:user_id => session[:user_id])
       recipe.update(:user_id => session[:user_id])
-      spice.recipes << recipe
-      spice.save
-      redirect "/spices/#{spice.slug}"
-    elsif current_user && spice.save && !recipe.save && !params[:spice][:recipe_ids]
       spice.update(:user_id => session[:user_id])
-      redirect "/spices/#{spice.slug}"
+      recipe.spices << spices
+      recipe.save
+      redirect "/recipes/#{recipe.slug}"
+    elsif current_user && recipe.save && !spice.save && !params[:recipe][:spice_ids]
+      #valid user, valid recipe, not valid spice, no spice_ids
+      recipe.update(:user_id => session[:user_id])
+      redirect "/recipes/#{recipe.slug}"
     else
       redirect '/login'
     end
