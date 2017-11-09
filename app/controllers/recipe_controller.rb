@@ -26,13 +26,10 @@ class RecipeController < AppController
 
     recipe = Recipe.new(params[:recipe])
     spice = Spice.new(params[:spice])
+
     if current_user && !recipe.save
       #valid user, blank recipe name
       flash.next[:blank_warning] = "Recipe name cannot be blank"
-      redirect '/recipes/new'
-    elsif current_user && params[:spice][:name] && !spice.save
-      #valid user, spice name given, and spice still not valid
-      flash.next[:flavor_id] = "Please select a flavor profile or select 'I don't know'"
       redirect '/recipes/new'
     elsif repeat_spices_or_recipes(current_user.recipes, recipe)
       flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
@@ -94,6 +91,68 @@ class RecipeController < AppController
     if current_user
       @recipe = Recipe.find_by_slug(params[:slug])
       erb :"recipes/edit"
+    else
+      redirect '/login'
+    end
+  end
+
+  patch '/recipes/:slug/edit' do #needs to update spice info
+    recipe = Recipe.find_by_slug(params[:slug])
+    customer_recipe = Recipe.find_by(:user_id => session[:user_id], :name => recipe.name)
+    if current_user && customer_recipe && !!params[:spice].has_value?("") && !params[:recipe][:spice_ids]
+      #valid user, valid spice, no recipe params, no recipe_ids
+      customer_recipe.update(name: params[:recipe][:name]) unless params[:recipe][:name].empty?
+      customer_recipe.update(url: params[:recipe][:url])
+
+      customer_recipe.spices.clear
+      flash.next[:update_recipe] = "#{customer_recipe.name} updated!"
+      redirect "/recipes/#{customer_recipe.slug}"
+    elsif current_user && customer_recipe && !params[:spice].has_value?("") && !params[:recipe][:spice_ids]
+      #valid user, valid spice, has new recipe params, no previous recipes checked
+      customer_recipe.update(name: params[:recipe][:name]) unless params[:recipe][:name].empty?
+      customer_recipe.update(url: params[:recipe][:url])
+      customer_recipe.spices.clear
+      spice = Spice.create(params[:spice])
+      if !repeat_spices_or_recipes(current_user.spices, spice)
+        #if the recipe is not a repeat
+        spice.update(:user_id => session[:user_id])
+        customer_recipe.spices << spice unless repeat_spices_or_recipes(current_user.spices, spice)
+        customer_recipe.save
+      else
+        flash.next[:repeat_spice] = "#{recipe.name.capitalize} is already in your recipe book"
+        redirect "/recipes/#{customer_recipe.slug}"
+      end
+      flash.next[:update_recipe] = "#{customer_recipe.name} updated!"
+      redirect "/recipes/#{customer_recipe.slug}"
+    elsif current_user && customer_recipe && !params[:spice].has_value?("") && !!params[:recipe][:spice_ids]
+      #valid user, valid spice, has recipe params, recipe_ids
+      customer_recipe.update(name: params[:recipe][:name]) unless params[:recipe][:name].empty?
+      customer_recipe.update(url: params[:recipe][:url])
+      customer_recipe.spices.clear
+      spice = Spice.create(params[:spice])
+      if !repeat_spices_or_recipes(current_user.spices, spice)
+        #saves valid recipe and checks for repeats
+        spice.update(:user_id => session[:user_id])
+        customer_recipe.spices << spice unless repeat_spices_or_recipes(current_user.spices, spice)
+        customer_recipe.save
+      else
+        flash.next[:repeat_spice] = "#{spice.name.capitalize} is already in your recipe book"
+        redirect "/recipes/#{customer_recipe.slug}"
+      end
+      params[:recipe][:spice_ids].each {|spice_id| customer_recipe.spices << Spice.find_by_id(spice_id)}
+      customer_recipe.save
+      flash.next[:update_recipe] = "#{customer_recipe.name} updated!"
+      redirect "/recipes/#{customer_recipe.slug}"
+    elsif current_user && customer_recipe && !!params[:spice].has_value?("") && !!params[:recipe][:spice_ids]
+      #valid customer, valid spice, no new recipes created, and new recipe_ids
+      customer_recipe.update(name: params[:recipe][:name]) unless params[:recipe][:name].empty?
+      customer_recipe.update(url: params[:spice][:url])
+      customer_recipe.spices.clear
+
+      params[:recipe][:spice_ids].each {|spice_id| customer_recipe.spices << Spice.find_by_id(spice_id)}
+      customer_recipe.save
+      flash.next[:update_recipe] = "#{customer_recipe.name} updated!"
+      redirect "/recipes/#{customer_recipe.slug}"
     else
       redirect '/login'
     end

@@ -3,7 +3,7 @@ class Spice < ActiveRecord::Base
   has_many :recipe_spice_flavors
   has_many :recipes, through: :recipe_spice_flavors
   belongs_to :user
-  validates_presence_of :name, :flavor_id
+  validates_presence_of :name
 
   def slug
     name.downcase.gsub(" ", "-")

@@ -17,7 +17,7 @@
     <input type="radio" name="spice[flavor_id]" value="<%= flavor.id%>">
     <%=flavor.name%></input>
   <%end%>
-  <input type="submit" name="create" value="Update">
+  <p><input type="submit" name="create" value="Update"></p>
 </form>
 
 <form action="/recipes/<%=@recipe.slug%>/delete" method="POST">
