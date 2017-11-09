@@ -1,6 +1,6 @@
 
-require 'bundler'
-Bundler.require
+require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
+Bundler.install
 
 ActiveRecord::Base.establish_connection(
   :adapter => "sqlite3",
