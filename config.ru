@@ -1,11 +1,15 @@
 require './config/environment'
 
-if ActiveRecord::Migrator.needs_migration?
-  raise "Migrations pending. Run 'rake db:migrate'"
-end
+$:<<File.dirname(/Users/kmlarson/spice-rack-app)
+require "site_generator"
+run SiteGenerator.new
 
-use Rack::MethodOverride
-use SpiceController
-use RecipeController
+#if ActiveRecord::Migrator.needs_migration?
+#  raise "Migrations pending. Run 'rake db:migrate'"
+#end
 
-run AppController
+#use Rack::MethodOverride
+#use SpiceController
+#use RecipeController
+
+#run AppController
