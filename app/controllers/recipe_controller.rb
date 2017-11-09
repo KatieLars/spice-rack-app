@@ -89,5 +89,15 @@ class RecipeController < AppController
     end
   end
 
+  get '/recipes/:slug/edit' do
+    @user = current_user
+    if current_user
+      @recipe = Recipe.find_by_slug(params[:slug])
+      erb :"recipes/edit"
+    else
+      redirect '/login'
+    end
+  end
+
 
 end
