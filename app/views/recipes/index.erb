@@ -7,7 +7,7 @@
 <%if @user.recipes.any?%>
   <p>Select a recipe to view or edit</p>
   <%@recipes.each.with_index(1) do |recipe, index| %>
-    <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a>
+    <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a><br></br>
   <%end%>
 <%end%>
 

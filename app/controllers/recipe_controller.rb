@@ -30,6 +30,10 @@ class RecipeController < AppController
       #valid user, blank recipe name
       flash.next[:blank_warning] = "Recipe name cannot be blank"
       redirect '/recipes/new'
+    elsif current_user && params[:spice][:name] && !spice.save
+      #valid user, spice name given, and spice still not valid
+      flash.next[:flavor_id] = "Please select a flavor profile or select 'I don't know'"
+      redirect '/recipes/new'
     elsif repeat_spices_or_recipes(current_user.recipes, recipe)
       flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
       redirect "/recipes/#{recipe.slug}"
@@ -45,16 +49,18 @@ class RecipeController < AppController
       recipe.spices << spice
       params[:recipe][:spice_ids].each do |spice_id|
         old_spice = Spice.find_by_id(spice_id)
-        recipe.spices << old_spice
+        recipe.spices << old_spice  unless repeat_spices_or_recipes(current_user.spices, old_spice)
       end
       recipe.save
       redirect "/recipes/#{recipe.slug}"
     elsif current_user && recipe.save && !spice.save && !!params[:recipe][:spice_ids]
-      #current_user, valid recipe, spice NOT valid, and recipe_ids
+      #current_user, valid recipe, spice NOT valid, and spice_ids
+
+      recipe.update(:user_id => session[:user_id])
       params[:recipe][:spice_ids].each do |spice_id|
         old_spice = Spice.find_by_id(spice_id)
-        recipe.spices << old_spice
-        spice.save
+        recipe.spices << old_spice  unless repeat_spices_or_recipes(current_user.spices, old_spice)
+        recipe.save
       end
       redirect "/recipes/#{recipe.slug}"
     elsif current_user && recipe.save && spice.save && !params[:recipe][:spice_ids]
