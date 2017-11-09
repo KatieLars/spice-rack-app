@@ -116,10 +116,12 @@ class RecipeController < AppController
       if !repeat_spices_or_recipes(current_user.spices, spice)
         #if the recipe is not a repeat
         spice.update(:user_id => session[:user_id])
-        customer_recipe.spices << spice unless repeat_spices_or_recipes(current_user.spices, spice)
+        customer_recipe.spices << spice #unless repeat_spices_or_recipes(current_user.spices, spice)
         customer_recipe.save
+        #binding.pry
       else
-        flash.next[:repeat_spice] = "#{recipe.name.capitalize} is already in your recipe book"
+
+        flash.next[:repeat_recipe] = "#{recipe.name.capitalize} is already in your recipe book"
         redirect "/recipes/#{customer_recipe.slug}"
       end
       flash.next[:update_recipe] = "#{customer_recipe.name} updated!"
@@ -130,10 +132,12 @@ class RecipeController < AppController
       customer_recipe.update(url: params[:recipe][:url]) unless params[:recipe][:url].empty?
       customer_recipe.spices.clear
       spice = Spice.create(params[:spice])
+
       if !repeat_spices_or_recipes(current_user.spices, spice)
         #saves valid recipe and checks for repeats
         spice.update(:user_id => session[:user_id])
-        customer_recipe.spices << spice unless repeat_spices_or_recipes(current_user.spices, spice)
+        customer_recipe.spices << spice #unless repeat_spices_or_recipes(current_user.spices, spice)
+
         customer_recipe.save
       else
         flash.next[:repeat_spice] = "#{spice.name.capitalize} is already in your recipe book"
@@ -153,6 +157,17 @@ class RecipeController < AppController
       customer_recipe.save
       flash.next[:update_recipe] = "#{customer_recipe.name} updated!"
       redirect "/recipes/#{customer_recipe.slug}"
+    else
+      redirect '/login'
+    end
+  end
+
+  delete '/recipes/:slug/delete' do
+    recipe = Recipe.find_by_slug(params[:slug])
+    if current_user.id == recipe.user_id
+      flash.next[:deleted_recipe] = "#{recipe.name} deleted!"
+      recipe.delete
+      redirect "/recipes"
     else
       redirect '/login'
     end
