@@ -7,7 +7,6 @@
   <%@recipe.spices.each.with_index(1) do |spice, index|%>
     <%=index%>. <a href="/spices/<%=spice.slug%>"><%=spice.name%></a><br></br>
   <%end%>
-<br></br>
 
 <form action="/recipes/<%=@recipe.slug%>/edit" method="GET">
   <input type="submit" value="Edit">
