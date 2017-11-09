@@ -5,7 +5,7 @@ Bundler.require
 
 ActiveRecord::Base.establish_connection(
   :adapter => "postgresql",
-  :database => "db/development.sqlite"
+  :database => "./db/spice_rack.db"
 )
 
 require_all 'app'
