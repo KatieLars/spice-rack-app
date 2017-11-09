@@ -1,6 +1,7 @@
 
+
 require 'bundler/setup'
-Bundler.require(File.read("/Users/kmlarson/spice-rack-app/Gemfile"))
+Bundler.require
 
 ActiveRecord::Base.establish_connection(
   :adapter => "sqlite3",

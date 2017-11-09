@@ -1,4 +1,5 @@
-require_relative './config/environment'
+
+require './config/environment'
 
 $:<<File.dirname("/Users/kmlarson/spice-rack-app")
 #require_all "./app/controllers"
