@@ -1,1 +1,21 @@
 <%=flash[:repeat_recipe]%>
+
+<h1><%=@recipe.name%></h1>
+<h4><a href="<%=@recipe.url%>"><%=@recipe.url%></a></h4>
+
+<h2>Spices</h2>
+  <%@recipe.spices.each.with_index(1) do |spice, index|%>
+    <%=index%>. <a href="/spices/<%=spice.slug%>"><%=spice.name%></a><br></br>
+  <%end%>
+<br></br>
+
+<form action="/recipes/<%=@recipe.slug%>/edit" method="GET">
+  <input type="submit" value="Edit">
+</form>
+
+<form action="/recipes/<%=@recipe.slug%>/delete" method="POST">
+  <input type="hidden" id="hidden" name="_method" value="delete">
+  <input type="submit" value="Delete">
+</form>
+
+<a href="/<%=@recipe.user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>
