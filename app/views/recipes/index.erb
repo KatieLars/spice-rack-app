@@ -1,0 +1,15 @@
+<h1>Your Recipes</h1>
+
+<%=flash[:deleted_recipe]%>
+<p><%=flash[:empty_notification]%></p>
+
+<%if @user.recipes.any?%>
+  <p>Select a recipe to view or edit</p>
+  <%@recipes.each.with_index(1) do |recipe, index| %>
+    <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a>
+  <%end%>
+<%end%>
+
+<h3><a href="/recipes/new">Add a Recipe</a></h3>
+
+<a href="/<%=@user.slug%>/home">Home</a>  <a href="/spices">Spices</a>  <a href="/logout">Logout</a>

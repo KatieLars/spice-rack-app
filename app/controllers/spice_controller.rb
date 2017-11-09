@@ -1,7 +1,7 @@
-require 'sinatra/flash'
+#require 'sinatra/flash'
 
 class SpiceController < AppController
-  register Sinatra::Flash
+  #register Sinatra::Flash
 
   get '/spices' do #index
     @user = User.find_by_id(session[:user_id])
@@ -9,7 +9,6 @@ class SpiceController < AppController
       @spices = @user.spices
       erb :"spices/index"
     elsif current_user && @user.spices.none?
-
       flash.now[:empty_notification] = "Your spice rack is empty" #flash notification not working
       erb :"spices/index"
     else
