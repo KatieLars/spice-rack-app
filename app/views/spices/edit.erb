@@ -18,7 +18,9 @@
   <p>Name: <input type="text" name="recipe[name]"></p>
   <p>URL: <input type="text" name="recipe[url]"></p>
   <input type="submit" name="create" value="Update">
-  <form action="/spices/<%=@spice.slug%>/delete" method="POST">
-    <input type="hidden" id="hidden" name="_method" value="delete">
-    <input type="submit" value="Delete">
-  </form>
+</form>
+
+<form action="/spices/<%=@spice.slug%>/delete" method="POST">
+  <input type="hidden" id="hidden" name="_method" value="delete">
+  <input type="submit" value="Delete">
+</form>
