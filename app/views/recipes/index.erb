@@ -2,6 +2,7 @@
 
 <%=flash[:deleted_recipe]%>
 <p><%=flash[:empty_notification]%></p>
+<p><%=flash[:no_recipe]%></p>
 
 <%if @user.recipes.any?%>
   <p>Select a recipe to view or edit</p>

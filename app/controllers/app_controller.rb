@@ -92,6 +92,13 @@ class AppController < Sinatra::Base
    def current_user
      User.find(session[:user_id])
    end
+
+   def repeat_spices_or_recipes(current_user_array, comp_obj)
+     #detects blank or repeat spices or recipes, returns non-repeat obj
+     current_user_array.detect {|obj| comp_obj.name.upcase == obj.name.upcase}
+     #iterates over an array of spice/recipe objects associated with user, and
+     #checks them against comp_obj to determine of the newly created comp_obj is a repeat
+   end
   end
 
 end

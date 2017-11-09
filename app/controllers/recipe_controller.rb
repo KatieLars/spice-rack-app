@@ -23,7 +23,7 @@ class RecipeController < AppController
   end
 
   post '/recipes/new' do
-    raise params.inspect
+
     recipe = Recipe.new(params[:recipe])
     spice = Spice.new(params[:spice])
     if current_user && !recipe.save
@@ -58,10 +58,10 @@ class RecipeController < AppController
       end
       redirect "/recipes/#{recipe.slug}"
     elsif current_user && recipe.save && spice.save && !params[:recipe][:spice_ids]
-      #current_user, valid spice, valid recipe, and no recipe_ids
+      #current_user, valid spice, valid recipe, and no spice_ids
       recipe.update(:user_id => session[:user_id])
       spice.update(:user_id => session[:user_id])
-      recipe.spices << spices
+      recipe.spices << spice
       recipe.save
       redirect "/recipes/#{recipe.slug}"
     elsif current_user && recipe.save && !spice.save && !params[:recipe][:spice_ids]
@@ -70,6 +70,15 @@ class RecipeController < AppController
       redirect "/recipes/#{recipe.slug}"
     else
       redirect '/login'
+    end
+  end
+
+  get '/recipes/:slug' do
+    if currrent_user.id == Recipe.find_by_slug(params[:slug]).user_id
+      erb :"recipes/show"
+    else
+      flash.next[:no_recipe] = "This recipe is not in your book"
+      redirect '/recipes'
     end
   end
 
