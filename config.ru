@@ -1,7 +1,7 @@
 require './config/environment'
 
-$:<<File.dirname(/Users/kmlarson/spice-rack-app)
-require "site_generator"
+$:<<File.dirname("/Users/kmlarson/spice-rack-app")
+require "./app/models/site_generator"
 run SiteGenerator.new
 
 #if ActiveRecord::Migrator.needs_migration?
