@@ -6,7 +6,7 @@ Spice Rack is a CRUD web app that tracks and manages spices and recipes.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'aic-info-cli-app'
+gem 'spice-rack-app'
 ```
 
 And then execute:
@@ -15,7 +15,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install aic-info-cli-app
+    $ gem install spice-rack-app
 
 
 ## Contributing
