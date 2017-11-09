@@ -102,7 +102,7 @@ class RecipeController < AppController
     if current_user && customer_recipe && !!params[:spice].has_value?("") && !params[:recipe][:spice_ids]
       #valid user, valid spice, no recipe params, no recipe_ids
       customer_recipe.update(name: params[:recipe][:name]) unless params[:recipe][:name].empty?
-      customer_recipe.update(url: params[:recipe][:url])
+      customer_recipe.update(url: params[:recipe][:url]) unless params[:recipe][:url].empty?
 
       customer_recipe.spices.clear
       flash.next[:update_recipe] = "#{customer_recipe.name} updated!"
@@ -110,7 +110,7 @@ class RecipeController < AppController
     elsif current_user && customer_recipe && !params[:spice].has_value?("") && !params[:recipe][:spice_ids]
       #valid user, valid spice, has new recipe params, no previous recipes checked
       customer_recipe.update(name: params[:recipe][:name]) unless params[:recipe][:name].empty?
-      customer_recipe.update(url: params[:recipe][:url])
+      customer_recipe.update(url: params[:recipe][:url]) unless params[:recipe][:url].empty?
       customer_recipe.spices.clear
       spice = Spice.create(params[:spice])
       if !repeat_spices_or_recipes(current_user.spices, spice)
@@ -127,7 +127,7 @@ class RecipeController < AppController
     elsif current_user && customer_recipe && !params[:spice].has_value?("") && !!params[:recipe][:spice_ids]
       #valid user, valid spice, has recipe params, recipe_ids
       customer_recipe.update(name: params[:recipe][:name]) unless params[:recipe][:name].empty?
-      customer_recipe.update(url: params[:recipe][:url])
+      customer_recipe.update(url: params[:recipe][:url]) unless params[:recipe][:url].empty?
       customer_recipe.spices.clear
       spice = Spice.create(params[:spice])
       if !repeat_spices_or_recipes(current_user.spices, spice)
@@ -146,7 +146,7 @@ class RecipeController < AppController
     elsif current_user && customer_recipe && !!params[:spice].has_value?("") && !!params[:recipe][:spice_ids]
       #valid customer, valid spice, no new recipes created, and new recipe_ids
       customer_recipe.update(name: params[:recipe][:name]) unless params[:recipe][:name].empty?
-      customer_recipe.update(url: params[:spice][:url])
+      customer_recipe.update(url: params[:recipe][:url]) unless params[:recipe][:url].empty?
       customer_recipe.spices.clear
 
       params[:recipe][:spice_ids].each {|spice_id| customer_recipe.spices << Spice.find_by_id(spice_id)}
