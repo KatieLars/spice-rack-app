@@ -178,7 +178,7 @@ end
 delete '/spices/:slug/delete' do
   spice = Spice.find_by_slug(params[:slug])
   if current_user.id == spice.user_id
-    flash.next[:deleted_spice] = "#{user_spice.name} deleted!"
+    flash.next[:deleted_spice] = "#{spice.name} deleted!"
     spice.delete
     redirect "/spices"
   else
