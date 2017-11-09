@@ -165,7 +165,7 @@ patch '/spices/:slug/edit' do #needs to update spice info
     customer_spice.update(name: params[:spice][:name]) unless params[:spice][:name].empty?
     customer_spice.update(flavor_id: params[:spice][:flavor_id])
     customer_spice.recipes.clear
-  
+
     params[:spice][:recipe_ids].each {|recipe_id| customer_spice.recipes << Recipe.find_by_id(recipe_id)}
     customer_spice.save
     flash.next[:update_spice] = "#{customer_spice.name} updated!"
@@ -175,6 +175,16 @@ patch '/spices/:slug/edit' do #needs to update spice info
   end
 end
 
+delete '/spices/:slug/delete' do
+  spice = Spice.find_by_slug(params[:slug])
+  if current_user.id == spice.user_id
+    flash.next[:deleted_spice] = "#{user_spice.name} deleted!"
+    spice.delete
+    redirect "/spices"
+  else
+    redirect '/login'
+  end
+end
 #helper methods
 def repeat_spices_or_recipes(current_user_array, comp_obj)
   #detects blank or repeat spices or recipes, returns non-repeat obj
