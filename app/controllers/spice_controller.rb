@@ -56,7 +56,6 @@ post '/spices/new' do #should create a new spice and recipe
     spice.recipes << recipe
     params[:spice][:recipe_ids].each do |recipe_id|
       old_recipe = Recipe.find_by_id(recipe_id)
-      old_recipe.update(:user_id => session[:user_id])
       spice.recipes << old_recipe unless repeat_spices_or_recipes(current_user.recipes, old_recipe)
     end #updates unless old recipe is a repeat recipe
     spice.save

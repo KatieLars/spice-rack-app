@@ -9,7 +9,7 @@
     <% @user.spices.each do |spice|%>
       <input type="checkbox" name="recipe[spice_ids][]" value="<%=spice.id%>"><%=spice.name%></input>
     <%end%>
-    
+
   <p>New Spice</p>
   <p>Name: <input type="text" name="spice[name]"></p>
   <p>Choose one of the following flavor profiles for your spice:</p>
@@ -17,6 +17,6 @@
     <input type="radio" name="spice[flavor_id]" value="<%= flavor.id%>">
     <%=flavor.name%></input>
   <%end%>
-
+  <br></br>
   <input type="submit" name="create" value="Add">
 </form>
