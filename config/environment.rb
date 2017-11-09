@@ -3,10 +3,10 @@
 require 'bundler/setup'
 Bundler.require
 
-ActiveRecord::Base.establish_connection(
-  :adapter => "postgresql",
-  :database => "./db/spice_rack.db"
-)
+#ActiveRecord::Base.establish_connection(
+#  :adapter => "postgresql",
+#  :database => "db/spice_rack.sqlite"
+#)
 
 require_all 'app'
 require_all 'lib'
