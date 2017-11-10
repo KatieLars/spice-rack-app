@@ -7,7 +7,7 @@ DATABASE_URL=URI.parse("postgres://ahddyelhqcrghk:a9890d2747b5a132ba2f80cf891b6e
 
 ActiveRecord::Base.establish_connection(
   :adapter => "postgresql",
-  :database => DATABASE_URL
+  :database => DATABASE_URL.path[1..-1]
 )
 
 require_all 'app'
