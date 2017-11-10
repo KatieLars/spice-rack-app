@@ -1,13 +1,13 @@
 require 'sinatra/flash'
 require 'tux'
 
+
 class AppController < Sinatra::Base
   configure do
     set :views, 'app/views'
     enable :sessions
     set :session_secret, "secret"
     register Sinatra::Flash
-    FlavorParser.call
   end
 
   get '/' do #done
