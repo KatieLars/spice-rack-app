@@ -1,14 +1,26 @@
 
-
 require 'bundler/setup'
 Bundler.require
 
-#DATABASE_URL=URI.parse("postgres://ahddyelhqcrghk:a9890d2747b5a132ba2f80cf891b6e851f6c0113d9f24e65abdf0ad998940b73@ec2-50-17-235-5.compute-1.amazonaws.com:5432/d3n9tu2hps02jt")
-
-ActiveRecord::Base.establish_connection(
+configure :development do
+  ActiveRecord::Base.establish_connection(
   :adapter => "sqlite3",
-  :database => "db/development.sqlite"
+  :database => "db/#{ENV['SINATRA_ENV']}.sqlite"
 )
+end
+
+configure :production do
+  db = URI.parse(ENV['HEROKU_POSTGRESQL_COBALT_URL'] || 'postgres://localhost/mydb')
+
+  ActiveRecord::Base.establish_connection(
+    :adapter  => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
+    :host     => db.host,
+    :username => db.user,
+    :password => db.password,
+    :database => db.path[1..-1],
+    :encoding => 'utf8'
+  )
+end
 
 require_all 'app'
 require_all 'lib'
