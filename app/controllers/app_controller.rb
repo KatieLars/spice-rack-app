@@ -7,6 +7,7 @@ class AppController < Sinatra::Base
     enable :sessions
     set :session_secret, "secret"
     register Sinatra::Flash
+    FlavorParser.call
   end
 
   get '/' do #done
