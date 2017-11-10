@@ -1,5 +1,7 @@
 Spice Rack is a CRUD web app that tracks and manages spices and recipes.
 
+You can access it online at
+
 
 ## Installation
 
