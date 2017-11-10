@@ -15,6 +15,7 @@ class AppController < Sinatra::Base
   end
 
   get '/login' do #if user not already logged in, displays login form
+    binding.pry
     if logged_in?
       @user = current_user
       redirect "/#{@user.slug}/home"
