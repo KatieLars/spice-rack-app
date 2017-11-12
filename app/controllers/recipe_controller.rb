@@ -77,8 +77,9 @@ class RecipeController < AppController
   end
 
   get '/recipes/:slug' do
-    @recipe = Recipe.find_by_slug(params[:slug])
-    if current_user.id == @recipe.user_id
+    user_recipe = Recipe.find_by_slug(params[:slug]) #finds recipe by slug
+    @recipe = Recipe.find_by(:user_id => session[:user_id], :name => user_recipe.name)
+    if current_user && @recipe
       erb :"recipes/show"
     else
       flash.next[:no_recipe] = "This recipe is not in your book"
