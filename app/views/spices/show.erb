@@ -6,7 +6,7 @@
 <%if @spice%>
   <h2>Recipes</h2>
   <%@spice.recipes.each.with_index(1) do |recipe, index|%>
-    <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a>
+    <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a><br></br>
   <%end%>
 <%end%>
 <br></br>
