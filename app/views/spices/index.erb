@@ -1,16 +1,14 @@
 <h1>Your Spices</h1>
 <%=flash[:deleted_spice]%>
+<%=flash[:no_spice]
 <p><%=flash[:empty_notification]%></p>
 
-
-<%if @user.spices.any?%>
   <p>Select a spice to view or edit</p>
-  <%@spices.each.with_index(1) do |spice, index| %>
+  <%current_user.spices.uniq.each.with_index(1) do |spice, index| %>
     <%=index%>. <a href="/spices/<%=spice.slug%>"><%=spice.name%></a><br></br>
   <%end%>
-<%end%>
 
 <h3><a href="/spices/new">Add a Spice</a></h3>
 <h3><a href="/spices/flavors">See spices by flavor profile</a></h3>
 
-<a href="/<%=@user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/logout">Logout</a>
+<a href="/<%=current_user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/logout">Logout</a>

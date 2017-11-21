@@ -4,13 +4,12 @@
 <p><%=flash[:empty_notification]%></p>
 <p><%=flash[:no_recipe]%></p>
 
-<%if @user.recipes.any?%>
   <p>Select a recipe to view or edit</p>
-  <%@recipes.each.with_index(1) do |recipe, index| %>
+  <%@recipes.uniq.each.with_index(1) do |recipe, index| %>
     <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a><br></br>
   <%end%>
-<%end%>
+
 
 <h3><a href="/recipes/new">Add a Recipe</a></h3>
 
-<a href="/<%=@user.slug%>/home">Home</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>
+<a href="/<%=current_user.slug%>/home">Home</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>

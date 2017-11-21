@@ -4,10 +4,10 @@ class User < ActiveRecord::Base
   has_many :flavors, through: :spices
   has_many :recipes
   has_many :spices
-  validates_presence_of :username, :password, :email
-  validates :username, uniqueness: true
-  validates :email, uniqueness: true
+
   has_secure_password
+  validates :username, :email, presence: true
+  validates :email, :username, uniqueness: true
 
   def slug
     username.downcase.gsub(" ", "-")

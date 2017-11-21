@@ -1,13 +1,11 @@
 <h1>Spices by Flavor Profile</h1>
 <h2>Select a spice for more info or to edit.</h2>
 
-<%@flavors.each do |flavor|%>
+<%current_user.flavors.uniq.each do |flavor|%>
   <ul><h3><%=flavor.name%></h3>
   <%flavor.spices.each do |spice|%>
-      <% if spice.user_id == @user.id%>
-        <li><a href="/spices/<%=spice.slug%>"><%=spice.name%></a></li>
-      <%end%>
-    <%end%></ul>
-  <%end%>
+    <li><a href="/spices/<%=spice.slug%>"><%=spice.name%></a></li>
+  <%end%></ul>
+<%end%>
 
-<a href="/<%=@user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>
+<a href="/<%=current_user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>

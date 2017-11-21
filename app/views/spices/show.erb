@@ -3,12 +3,10 @@
 <h1><%=@spice.name%></h1>
 <h4><%=@spice.flavor.name%></h4>
 
-<%if @spice%>
   <h2>Recipes</h2>
-  <%@spice.recipes.each.with_index(1) do |recipe, index|%>
+  <%@spice.recipes.uniq.each.with_index(1) do |recipe, index|%>
     <%=index%>. <a href="/recipes/<%=recipe.slug%>"><%=recipe.name%></a><br></br>
   <%end%>
-<%end%>
 <br></br>
 
 <form action="/spices/<%=@spice.slug%>/edit" method="GET">
@@ -20,4 +18,4 @@
   <input type="submit" value="Delete">
 </form>
 
-<a href="/<%=@user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>
+<a href="/<%=current_user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>

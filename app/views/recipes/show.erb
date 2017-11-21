@@ -5,7 +5,7 @@
 <h4><a href="<%=@recipe.url%>"><%=@recipe.url%></a></h4>
 
 <h2>Spices</h2>
-  <%@recipe.spices.each.with_index(1) do |spice, index|%>
+  <%@recipe.spices.uniq.each.with_index(1) do |spice, index|%>
     <%=index%>. <a href="/spices/<%=spice.slug%>"><%=spice.name%></a><br></br>
   <%end%>
 

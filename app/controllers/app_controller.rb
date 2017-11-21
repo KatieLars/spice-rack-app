@@ -14,11 +14,9 @@ class AppController < Sinatra::Base
     erb :home
   end
 
-  get '/login' do #if user not already logged in, displays login form
-    #binding.pry
+  get '/login' do
     if logged_in?
-      @user = current_user
-      redirect "/#{@user.slug}/home"
+      redirect "/#{current_user.slug}/home"
     else
       erb :login
     end
@@ -26,14 +24,13 @@ class AppController < Sinatra::Base
 
   post '/login' do
     user = User.find_by(:username => params[:username])
-    if params.detect {|k, v| v.empty?}
-      empty_field = params.detect {|k, v| v.empty?}[0].to_s
-      flash[:warning] = "Please enter #{empty_field}"
+    if user && !user.authenticate(params[:password])
+      flash[:warning] = "Please enter a valid password"
       redirect '/login'
     elsif user && user.authenticate(params[:password])
       session[:user_id] = user.id
       redirect "/#{user.slug}/home"
-    else #goes to sign up if can't find/authenticate user
+    else
       flash[:warning] = "Sorry! We couldn't find that username or password combination"
       redirect "/login"
     end
@@ -41,28 +38,24 @@ class AppController < Sinatra::Base
 
   get '/signup' do
     if logged_in?
-      @user = current_user
-      redirect "/#{@user.slug}/home"
+      redirect "/#{current_user.slug}/home"
     else
       erb :signup
     end
   end
 
   post '/signup' do
-    user = User.new(params)
-    if params.detect {|k, v| v.empty?}
-      empty_field = params.detect {|k, v| v.empty?}[0].to_s
-      flash[:warning] = "Please enter #{empty_field}"
-      redirect '/signup'
-    elsif User.find_by(:username => params[:username])
-      flash[:warning] = "Sorry! That username has already been used."
-      redirect '/signup'
-    elsif User.find_by(:email => params[:email])
-      flash[:warning] = "A user with that email address already exists."
-      redirect '/signup'
-    elsif !User.find_by(:username => params[:username], :email => params[:email]) && user.save
-      session[:user_id] = user.id
-      redirect "/#{user.slug}/home"
+    if !logged_in?
+      user = User.new(params)
+      if user.save
+        session[:user_id] = user.id
+        redirect "/#{user.slug}/home"
+      else
+        flash[:error] = user.errors.full_messages.to_sentence
+        redirect to '/signup'
+      end
+    else
+      redirect to '/'
     end
   end
 
@@ -88,18 +81,16 @@ class AppController < Sinatra::Base
 
   helpers do
    def logged_in?
-     !!session[:user_id]
+     !!current_user
    end
 
-   def current_user
-     User.find(session[:user_id])
+   def current_user # setters/getter -> User Instance || nil
+     #memoization
+     @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
    end
 
-   def repeat_spices_or_recipes(current_user_array, comp_obj)
-     #detects blank or repeat spices or recipes, returns non-repeat obj
-     current_user_array.detect {|obj| comp_obj.name.upcase == obj.name.upcase}
-     #iterates over an array of spice/recipe objects associated with user, and
-     #checks them against comp_obj to determine of the newly created comp_obj is a repeat
+   def delete_blank_values(params)
+     params.delete_if{|k, v| v.empty? or v.instance_of?(Sinatra::IndifferentHash) && delete_blank_values(v).empty?}
    end
   end
 

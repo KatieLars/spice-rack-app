@@ -4,19 +4,22 @@
 
 <form action="/spices/new" method="POST">
   <p>Name: <input type="text" name="spice[name]"></p>
+
   <p>Choose one of the following flavor profiles:</p>
   <% Flavor.all.each do |flavor|%>
     <input type="radio" name="spice[flavor_id]" value="<%= flavor.id%>">
     <%=flavor.name%></input>
   <%end%>
+
   <p>Choose a recipe and/or add a new recipe</p>
-    <% @user.recipes.each do |recipe|%>
+    <% current_user.recipes.each do |recipe|%>
       <input type="checkbox" name="spice[recipe_ids][]" value="<%=recipe.id%>"><%=recipe.name%></input>
     <%end%>
+    
   <p>New Recipe</p>
-  <p>Name: <input type="text" name="recipe[name]"></p>
-  <p>URL: <input type="text" name="recipe[url]"></p>
+  <p>Name: <input type="text" name="spice[recipe][name]"></p>
+  <p>URL: <input type="text" name="spice[recipe][url]"></p>
   <input type="submit" name="create" value="Add">
 </form>
 
-<a href="/<%=@user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>
+<a href="/<%=current_user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>

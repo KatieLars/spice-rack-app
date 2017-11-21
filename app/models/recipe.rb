@@ -3,8 +3,23 @@ class Recipe < ActiveRecord::Base
   has_many :flavors, through: :recipe_spice_flavors
   has_many :spices, through: :recipe_spice_flavors
   belongs_to :user
-  validates_presence_of :name
+  validates :name, presence: true
 
+  def spice_ids=(spice_ids) #returns a single object or array of objects
+    spices.clear
+    spice_ids.each do |spice_id|
+      spices << Spice.find_by_id(spice_id)
+      save
+    end
+  end
+
+  def spice=(spice)
+    spices << Spice.create(spice)
+  end
+
+  def update_spice_user_id
+    self.spices.each {|spice| spice.update(user_id: self.user_id)}
+  end
 
   def slug
     name.downcase.gsub(" ", "-")
@@ -16,3 +31,5 @@ class Recipe < ActiveRecord::Base
   end
 
 end
+
+@luke

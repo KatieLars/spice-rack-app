@@ -3,19 +3,22 @@
 <form action="/spices/<%=@spice.slug%>/edit" method="POST">
   <input type="hidden" id="hidden" name="_method" value="patch">
   <p>Name: <input type="text" name="spice[name]" placeholder="<%=@spice.name%>"></p>
+
   <p>Choose one of the following flavor profiles:</p>
   <% Flavor.all.each do |flavor|%>
     <input type="radio" name="spice[flavor_id]" value="<%= flavor.id%>" <%= 'checked' if @spice.flavor.name.include?(flavor.name)%>>
     <%=flavor.name%></input>
   <%end%>
+
   <p>Choose a recipe and/or add a new recipe</p>
-    <% @user.recipes.each do |recipe|%>
+    <% current_user.recipes.each do |recipe|%>
       <input type="checkbox" name="spice[recipe_ids][]" value="<%=recipe.id%>" <%='checked' if @spice.recipes.include?(recipe)%>>
       <%=recipe.name %></input>
     <%end%>
+
   <p>New Recipe</p>
-  <p>Name: <input type="text" name="recipe[name]"></p>
-  <p>URL: <input type="text" name="recipe[url]"></p>
+  <p>Name: <input type="text" name="spice[recipe][name]"></p>
+  <p>URL: <input type="text" name="spice[recipe][url]"></p>
   <input type="submit" name="create" value="Update">
 </form>
 
@@ -24,4 +27,4 @@
   <input type="submit" value="Delete">
 </form>
 
-<a href="/<%=@user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>
+<a href="/<%=current_user.slug%>/home">Home</a>&emsp;<a href="/recipes">Recipes</a>&emsp;<a href="/spices">Spices</a>&emsp;<a href="/logout">Logout</a>
