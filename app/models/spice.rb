@@ -4,7 +4,7 @@ class Spice < ActiveRecord::Base
   has_many :recipes, through: :recipe_spice_flavors
   belongs_to :user
   validates :name, presence: true
-  validates :name, uniqueness: true
+  validates :name, uniqueness: {scope: :user}
 
   def recipe_ids=(recipe_ids) 
     recipes.clear
