@@ -1,11 +1,11 @@
 class RecipeController < AppController
 
   get '/recipes' do #idnex page for logged_in users
-    if logged_in? && current_user.recipes.any?
+    if logged_in?
       @recipes = current_user.recipes
-      erb :"recipes/index"
-    elsif logged_in? && current_user.recipes.none?
-      flash.now[:empty_notification] = "Your recipe book is empty" #flash notification not working
+      if @recipes.none?
+        flash.now[:empty_notification] = "Your recipe book is empty"
+      end
       erb :"recipes/index"
     else
       redirect "/"
